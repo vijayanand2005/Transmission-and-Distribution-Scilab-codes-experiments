@@ -1,0 +1,50 @@
+clc;
+clear;
+
+// -------- INPUTS --------
+Vs = 120000;          // Sending-end line voltage (V)
+Vr = 110000;          // Receiving-end line voltage (V)
+Zr = 6;               // Resistance per phase (ohm)
+Zx = 8;               // Reactance per phase (ohm)
+pf = 0.9;             // Receiving-end power factor (lag)
+f = 50;               // frequency (not directly used)
+
+// -------- DISPLAY INPUTS --------
+disp("INPUTS:");
+disp("Vs (V) = " + string(Vs));
+disp("Vr (V) = " + string(Vr));
+disp("Z = 6 + j8 ohms per phase");
+disp("Power factor (lag) = " + string(pf));
+
+// -------- CALCULATIONS --------
+Vr_phase = Vr / sqrt(3);
+Vs_phase = Vs / sqrt(3);
+
+phi = acos(pf);                     // pf angle
+Z = complex(Zr, Zx);                // line impedance per phase
+
+// Solve current from Vs = Vr + I*Z
+// I = (Vs_phase - Vr_phase) / Z  (phasor with PF angle applied)
+I = (Vs_phase - Vr_phase*exp(%i*(-phi))) / Z;
+I_mag = abs(I);
+
+// Power delivered (receiving end)
+Pout = sqrt(3) * Vr * I_mag * pf;
+
+// Line losses
+Ploss = 3 * (I_mag^2) * Zr;
+
+// Sending-end real power
+Ps = Pout + Ploss;
+
+// Sending-end apparent power
+S = sqrt(3) * Vs * I_mag;
+
+// Sending-end pf
+pf_s = Ps / S;
+
+// -------- DISPLAY OUTPUTS --------
+disp("OUTPUT:");
+disp("Line current (A) = " + string(I_mag));
+disp("Power output (W) = " + string(Pout));
+disp("Sending-end power factor = " + string(pf_s));
