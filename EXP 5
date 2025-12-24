@@ -1,0 +1,19 @@
+clc; clear;
+
+// Given inputs
+D = 3;                  // spacing between conductors (m)
+r = 1/100;              // radius in meters (1 cm = 0.01 m)
+eps0 = 8.854e-12;       // permittivity of free space (F/m)
+
+// Display inputs
+disp("Spacing D (m) = " + string(D));
+disp("Radius r (m)  = " + string(r));
+disp("Permittivity (F/m) = " + string(eps0));
+
+// Calculations
+C_per_m = %pi * eps0 / log(D/r);
+C_per_km = C_per_m * 1000;
+
+// Display outputs
+disp("Capacitance per meter (F/m) = " + string(C_per_m));
+disp("Capacitance per km (F/km)   = " + string(C_per_km));
