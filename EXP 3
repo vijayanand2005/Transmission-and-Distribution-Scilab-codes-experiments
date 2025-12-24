@@ -1,0 +1,16 @@
+clc; clear;
+
+// Given values
+d = 1.24/100;          // diameter in meters
+r = d/2;               // radius
+D = 2;                 // spacing in meters
+
+gmr = 0.7788*r;        // geometric mean radius
+
+L_per_m = 2e-7 * log(D/gmr);
+L_per_km = L_per_m * 1000;
+
+// Display results
+disp("Diameter (m) = "+string(d));
+disp("Spacing (m)  = "+string(D));
+disp("Inductance per km (H/km) = "+string(L_per_km));
