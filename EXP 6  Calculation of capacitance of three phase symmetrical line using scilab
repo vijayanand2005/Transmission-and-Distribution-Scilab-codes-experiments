@@ -1,0 +1,23 @@
+clc;
+clear;
+
+// GIVEN INPUTS
+D = 2;                  // spacing between conductors (m)
+d = 0.0125;             // diameter of conductor (m)
+eps = 8.854e-12;        // permittivity (F/m)
+L = 1000;               // length (m) = 1 km
+
+// DISPLAY INPUTS
+disp("INPUTS:");
+disp("Spacing between conductors (m) = " + string(D));
+disp("Diameter of conductor (m) = " + string(d));
+disp("Line length (m) = " + string(L));
+
+// CALCULATIONS
+r = d/2;                         // radius
+C_per_m = (2*%pi*eps)/log(D/r);  // capacitance per metre
+C_per_km = C_per_m * L;          // capacitance per km
+
+// DISPLAY OUTPUT
+disp("OUTPUT:");
+disp("Capacitance per conductor per km (F) = " + string(C_per_km));
