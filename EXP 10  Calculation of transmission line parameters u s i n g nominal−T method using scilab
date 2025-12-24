@@ -1,0 +1,73 @@
+clc; clear;
+
+// -------- INPUTS --------
+VR_LL = 66000;          // Receiving end line voltage (V)
+P = 10000*1000;         // Power (W)
+pf = 0.8;               // Power factor lagging
+
+Rkm = 0.1;              // ohm / km / phase
+Xkm = 0.2;              // ohm / km / phase
+Bkm = 0.04e-4;          // siemens / km / phase
+L = 100;                // km
+
+// -------- DISPLAY INPUTS --------
+disp("INPUTS");
+disp(VR_LL, "Receiving end line voltage (V) = ");
+disp(P, "Load Power (W) = ");
+disp(pf, "Power factor = ");
+disp(Rkm, "R per km / phase (ohm) = ");
+disp(Xkm, "X per km / phase (ohm) = ");
+disp(Bkm, "Susceptance per km / phase (S) = ");
+disp(L, "Line length (km) = ");
+
+// -------- CALCULATIONS --------
+// Per-phase voltage
+VR = VR_LL / sqrt(3);
+
+// Series impedance
+R = Rkm * L;
+X = Xkm * L;
+Z = R + %i*X;
+
+// Shunt admittance
+B = Bkm * L;
+Y = %i * B;
+
+// Load current (magnitude)
+IR_mag = P / (sqrt(3)*VR_LL*pf);
+phi = acos(pf);
+
+// Receiving end current (phasor, lagging)
+IR = IR_mag * exp(-%i*phi);
+
+// ABCD constants (Nominal-T)
+A = 1 + (Y*Z)/2;
+B = Z * (1 + (Y*Z)/4);
+C = Y;
+D = A;
+
+// Sending end voltage and current (per phase)
+VS = A*VR + B*IR;
+IS = C*VR + D*IR;
+
+// Regulation
+Reg = (abs(VS) - VR)/VR * 100;
+
+// Sending-end power factor
+angleVS = atan(imag(VS)/real(VS));
+angleIS = atan(imag(IS)/real(IS));
+pf_s = cos(angleVS - angleIS);
+
+// Convert VS back to line-to-line
+VS_LL = abs(VS) * sqrt(3);
+
+// Input power and efficiency
+Pin = sqrt(3) * VS_LL * abs(IS) * pf_s;
+eta = (P / Pin) * 100;
+
+// -------- OUTPUTS --------
+disp("OUTPUTS");
+disp(abs(IS),  "Sending end current (A) = ");
+disp(VS_LL,    "Sending end voltage (V) = ");
+disp(pf_s,     "Sending end power factor = ");
+disp(eta,      "Transmission efficiency (%) = ");
