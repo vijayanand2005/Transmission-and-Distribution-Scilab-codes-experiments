@@ -1,0 +1,55 @@
+clc; clear;
+
+// ---- INPUTS ----
+VR = 66000;            // Receiving end voltage (V)
+P  = 15000*1000;       // Power (W)
+pf = 0.8;              // Power factor (lag)
+
+Rkm = 0.25;            // ohm/km
+Xkm = 0.8;             // ohm/km
+Bkm = 14e-6;           // siemens/km
+L   = 100;             // km
+
+// ---- DISPLAY INPUTS ----
+disp("INPUTS");
+disp(VR, "Receiving end voltage (V) = ");
+disp(P,  "Power (W) = ");
+disp(pf, "Power factor = ");
+disp(Rkm, "R per km (ohm) = ");
+disp(Xkm, "X per km (ohm) = ");
+disp(Bkm, "Susceptance per km (S) = ");
+disp(L, "Line length (km) = ");
+
+// ---- CALCULATIONS ----
+R = Rkm*L;
+X = Xkm*L;
+Z = R + %i*X;
+
+B = Bkm*L;
+
+IL = P/(VR*pf);          // load current magnitude
+phi = acos(pf);          // lag angle
+
+IL_ph = IL * exp(-%i*phi);   // load current phasor
+
+IC = VR*B*%i;               // charging current (leading)
+
+IR = IL_ph + IC;            // receiving current (phasor)
+
+IS = IR;                    // sending current (same for end condenser)
+
+VS = VR + IR*Z;             // sending voltage
+
+Reg = (abs(VS) - VR)/VR*100;
+
+// sending-end power factor
+angleVS = atan(imag(VS)/real(VS));
+angleIS = atan(imag(IS)/real(IS));
+pfs = cos(angleVS - angleIS);
+
+// ---- OUTPUTS ----
+disp("OUTPUTS");
+disp(abs(IS), "Sending end current (A) = ");
+disp(abs(VS), "Sending end voltage (V) = ");
+disp(Reg,     "Voltage regulation (%) = ");
+disp(pfs,     "Sending-end power factor = ");
